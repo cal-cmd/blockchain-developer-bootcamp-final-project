@@ -46,7 +46,7 @@
        timeoutBlocks: 200,
        gas: 10000000,
        skipDryRun: true
-     },
+    },
      rinkeby: {
       provider: () => new HDWalletProvider(mnemonic, `wss://rinkeby.infura.io/ws/v3/${infura_key}`),
       network_id: 4,
@@ -61,7 +61,7 @@
        confirmations: 10,
        timeoutBlocks: 200,
        skipDryRun: true
-     },
+    },
    },
      // Useful for testing. The `development` name is special - truffle uses it by default
      // if it's defined here and no other network is specified at the command line.
