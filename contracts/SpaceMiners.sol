@@ -31,7 +31,7 @@ contract SpaceMiners is ERC1155 {
         miners.push(Miner({bagSize: 48, warpFee: 3, returnTime: 24, departTime: 0, fee: 1 ether, active: false}));
     }
 
-    /// @dev Called by sender to mint miner for fee
+    /// @notice Called by sender to mint miner for fee
     /// @param _minerId id of the miner (0-3)
     function mintMiner(uint _minerId) public payable {
         require(msg.value == miners[_minerId].fee);
