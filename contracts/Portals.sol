@@ -32,18 +32,6 @@ contract Portals is ERC721URIStorage, Ownable {
         return newItemId;
     }
 
-    /// @notice function to mint multiple portals
-    /// @param player minter of portals
-    /// @param tokenURI tokens URIs
-    /// @param amount amount of portals to mint
-    /// @dev minting fee * amount = portalFee
-    function mintPortals(address player, string memory tokenURI, uint amount) public payable {
-        require(msg.value == portalFee * amount, "Invalid payment (ex. amount * portalFee)");
-        for(uint i=1; i <= amount; i++) {
-            mintPortal(player, tokenURI);
-        }
-    }
-
     /// @notice Change portal minting fee, can only be called by owner
     /// @param _fee fee for minting
     function changePortalFee(uint _fee) public onlyOwner {
