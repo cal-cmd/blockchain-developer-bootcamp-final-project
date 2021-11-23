@@ -12,16 +12,16 @@ contract Portals is ERC721URIStorage, Ownable {
     Counters.Counter private _tokenIds;
 
     /// @notice fee to mint portal
-    uint public portalFee = 1 wei;
+    uint public portalMintingFee = 1 wei;
 
     constructor() ERC721("Portals", "PRT") {}
 
     /// @notice function to mint portals for fee
     /// @param player minter of portal
     /// @param tokenURI token URI
-    /// @dev minting fee = portalFee (default: 1 ether) 
+    /// @dev minting fee = portalMintingFee (default: 1 ether) 
     function mintPortal(address player, string memory tokenURI) public payable returns (uint256) {
-        require(msg.value >= portalFee, "");
+        require(msg.value >= portalMintingFee, "");
         _tokenIds.increment();
         require(_tokenIds.current() <= 10, "only up to 10 portals can be minted");
 
@@ -34,7 +34,7 @@ contract Portals is ERC721URIStorage, Ownable {
 
     /// @notice Change portal minting fee, can only be called by owner
     /// @param _fee fee for minting
-    function changePortalFee(uint _fee) public onlyOwner {
-        portalFee = _fee;
+    function changePortalMintingFee(uint _fee) public onlyOwner {
+        portalMintingFee = _fee;
     }
 }
