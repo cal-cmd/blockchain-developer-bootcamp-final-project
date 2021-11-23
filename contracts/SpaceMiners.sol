@@ -11,8 +11,6 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 /// @title SpaceMiners contract for miners
 contract SpaceMiners is ERC1155 {
 
-    event Test(address owner);
-
     struct Miner {
         uint bagSize;
         uint warpFee;
@@ -48,7 +46,6 @@ contract SpaceMiners is ERC1155 {
     /// @param _contractAddress Portal contract address
     function checkPortalOwner(uint _id, address _contractAddress) public returns(address) {
         Portal portalsContract = Portal(_contractAddress);
-        emit Test(portalsContract.ownerOf(_id));
         return portalsContract.ownerOf(_id);
     }
 }
