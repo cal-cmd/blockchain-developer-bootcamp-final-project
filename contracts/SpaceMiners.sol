@@ -44,8 +44,10 @@ contract SpaceMiners is ERC1155 {
     /// @notice Checks owner of portal
     /// @param _id Portal id
     /// @param _contractAddress Portal contract address
-    function checkPortalOwner(uint _id, address _contractAddress) public returns(address) {
+    function checkPortalOwner(uint _id, address _contractAddress) internal returns(address) {
         Portal portalsContract = Portal(_contractAddress);
         return portalsContract.ownerOf(_id);
     }
+
+
 }
