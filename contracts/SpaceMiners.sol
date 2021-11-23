@@ -20,7 +20,7 @@ contract SpaceMiners is ERC1155 {
     }
 
     Miner[] public miners;
-    mapping(address => mapping(uint => uint) private activeMiners;
+    mapping(address => mapping(uint => uint)) private activeMiners;
 
     uint256 public constant MINER_1 = 0;
     uint256 public constant MINER_2 = 1;
@@ -52,8 +52,8 @@ contract SpaceMiners is ERC1155 {
     function _beforeTokenTransfer(address operator, address from, address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data) internal virtual override {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
 
-        for(uint i=0; i < miners.length; i++) {
-            require(amounts[i] - activeMiners[from][i] >= 1, "Miner(s) still on the job");
+        for(uint i=0; i < ids.length; i++) {
+            require(activeMiners[from][i] == 0, "Miner(s) still on the job");
         }
     }
 
