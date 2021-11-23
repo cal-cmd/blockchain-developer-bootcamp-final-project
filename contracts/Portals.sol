@@ -12,7 +12,7 @@ contract Portals is ERC721URIStorage, Ownable {
     Counters.Counter private _tokenIds;
 
     /// @notice fee to mint portal
-    uint public portalFee = 1 ether;
+    uint public portalFee = 1 wei;
 
     constructor() ERC721("Portals", "PRT") {}
 

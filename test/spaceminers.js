@@ -1,4 +1,5 @@
 const SpaceMiners = artifacts.require("SpaceMiners");
+const Portals = artifacts.require("Portals");
 
 contract("SpaceMiners", async accounts => {
   it("should mint 1 miner when payment is >= ETH fee", async () => {

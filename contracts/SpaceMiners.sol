@@ -1,12 +1,17 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
+
+/// @title Portal ownerOf abi for SpaceMiners portals contract
+interface Portal {
+    function ownerOf(uint256 tokenId) external view returns (address);
+}
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
 /// @title SpaceMiners contract for miners
-
 contract SpaceMiners is ERC1155 {
+
+    event Test(address owner);
 
     struct Miner {
         uint bagSize;
@@ -31,10 +36,19 @@ contract SpaceMiners is ERC1155 {
         miners.push(Miner({bagSize: 48, warpFee: 3, returnTime: 24, departTime: 0, fee: 1 ether, active: false}));
     }
 
-    /// @notice Called by sender to mint miner for fee
+    /// @notice Mint miner for fee
     /// @param _minerId id of the miner (0-3)
     function mintMiner(uint _minerId) public payable {
         require(msg.value == miners[_minerId].fee);
         _mint(msg.sender, _minerId, 1, "");
+    }
+
+    /// @notice Checks owner of portal
+    /// @param _id Portal id
+    /// @param _contractAddress Portal contract address
+    function checkPortalOwner(uint _id, address _contractAddress) public returns(address) {
+        Portal portalsContract = Portal(_contractAddress);
+        emit Test(portalsContract.ownerOf(_id));
+        return portalsContract.ownerOf(_id);
     }
 }
