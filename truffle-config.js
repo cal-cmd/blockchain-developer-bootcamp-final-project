@@ -55,6 +55,14 @@
       timeoutBlocks: 200,
       skipDryRun: true
     },
+    ropsten: {
+      provider: () => new HDWalletProvider(mnemonic, `wss://ropsten.infura.io/ws/v3/${infura_key}`),
+      network_id: 3,
+      gas: 8000000,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
      bsc: {
        provider: () => new HDWalletProvider(mnemonic, `https://bsc-dataseed1.binance.org`),
        network_id: 56,
