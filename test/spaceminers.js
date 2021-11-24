@@ -11,13 +11,12 @@ contract("SpaceMiners", async accounts => {
     assert.equal(balanceOf, 1, "miner balance still 0");
     assert.equal(tx.value, web3.utils.toWei('1', 'ether'), "check transaction value");
   });
-  //loop through all miners
-  // it("should warp miner through portal, and prevent warping if: inactive miners > active miners", async () => {
-  //   const instance = await SpaceMiners.deployed();
-  //   const mintMiner = await instance.mintMiner(0, {value: web3.utils.toWei('1', 'ether')});
-  //   const warp = await instance.warp(0);
-  //   const activeMiners = await instance.getActiveMiners(0);
+  it("should warp miner through portal and increase activeMiners count", async () => {
+    const instance = await SpaceMiners.deployed();
+    const mintMiner = await instance.mintMiner(0, {value: web3.utils.toWei('1', 'ether')});
+    const warp = await instance.warp(0);
+    const activeMiners = await instance.getActiveMiners(0);
     
-  //   assert.equal(activeMiners.valueOf(), 1, "activeMiners count still 0");
-  // });
+    assert.equal(activeMiners, 1, "activeMiners count still 0");
+  });
 });

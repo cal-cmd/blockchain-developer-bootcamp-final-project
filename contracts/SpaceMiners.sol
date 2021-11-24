@@ -94,7 +94,7 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
 
     /// @notice Returns amount of active miner(s) for specified id
     /// @param _minerId id of the miner (0-3)
-    function getActiveMiners(uint _minerId) public returns(uint) {
+    function getActiveMiners(uint _minerId) public view returns(uint) {
         return activeMiners[msg.sender][_minerId];
     }
 

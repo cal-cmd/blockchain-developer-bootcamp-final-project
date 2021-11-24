@@ -2,26 +2,22 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Roles.sol";
+import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
 
 /// @title Gems contract for space miners
 
-contract Gems is ERC20 {
-    using Roles for Roles.Role;
-    Roles.Role private _minter;
+contract Gems is ERC20PresetMinterPauser {
+    bytes32 public constant MINTER = keccak256("MINTER");
 
-    constructor(address[] memory minters) ERC20('GEMS', 'GEM') {
+    // for the sake of keeping testing easy for everyone will make minter role msg.sender (it will typically be the SpaceMiners.sol contract address)
+    constructor() ERC20PresetMinterPauser('GEMS', 'GEM') {
         _mint(msg.sender, 100000000*10**18);
-
-        for (uint256 i = 0; i < minters.length; ++i) {
-            _minters.add(minters[i]);
-        }
+        grantRole(MINTER, msg.sender);
     }
 
     /// @notice Used by SpaceMiners.sol contract to mint gems for players
     function mintGems(address _player, uint amount) external {
-        require(_minters.has(msg.sender), "DOES_NOT_HAVE_MINTER_ROLE");
+        require(hasRole(MINTER, msg.sender));
         _mint(_player, amount);
     }
 }
