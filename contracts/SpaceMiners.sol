@@ -61,9 +61,9 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
 
     Miner[] public miners;
     mapping(address => mapping(uint => uint)) private activeMiners;
-    mapping(address => mapping(uint => uint)) private minersDepartedTime;
-    mapping(address => uint) private departedCount;
-    mapping(address => uint) private payoutCount;
+    mapping(address => mapping(uint => mapping(uint => uint))) private minersDepartedTime;
+    mapping(address => mapping(uint => uint)) private departedCount;
+    mapping(address => mapping(uint => uint)) private payoutCount;
 
     uint256 public constant MINER_1 = 0;
     uint256 public constant MINER_2 = 1;
@@ -103,9 +103,9 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
     function warp(uint _minerId) public {
         require(balanceOf(msg.sender, _minerId) - activeMiners[msg.sender][_minerId] >= 1, "You don't own any inactive miners");
         require(activeMiners[msg.sender][_minerId] <= 10, "Maximum of 10 miners warped per id");
-        minersDepartedTime[msg.sender][departedCount[msg.sender]] = block.timestamp;
+        minersDepartedTime[msg.sender][_minerId][departedCount[msg.sender][_minerId]] = block.timestamp;
         activeMiners[msg.sender][_minerId]++;
-        departedCount[msg.sender]++;
+        departedCount[msg.sender][_minerId]++;
         //getRandomNumber(); // Disabled unless running on Rinkeby and can load RandomNumberConsumer with LINK
     }
 
@@ -114,8 +114,8 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
     function payout(uint _minerId) public {
         uint counter;
         for(uint i=0; i < activeMiners[msg.sender][_minerId]; i++) {
-            if(minersDepartedTime[msg.sender][payoutCount[msg.sender]] - block.timestamp >= miners[_minerId].returnTime * 60) {
-                payoutCount[msg.sender]++;
+            if(minersDepartedTime[msg.sender][_minerId][payoutCount[msg.sender][_minerId]] - block.timestamp >= miners[_minerId].returnTime * 60) {
+                payoutCount[msg.sender][_minerId]++;
                 counter++;
             }
         }
