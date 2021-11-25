@@ -1,5 +1,6 @@
 const SpaceMiners = artifacts.require("SpaceMiners");
 const Portals = artifacts.require("Portals");
+const Gems = artifacts.require("Gems");
 
 contract("SpaceMiners", async accounts => {
   it("should mint 1 miner when payment = ETH fee", async () => {
@@ -13,10 +14,19 @@ contract("SpaceMiners", async accounts => {
   });
   it("should warp miner through portal and increase activeMiners count", async () => {
     const instance = await SpaceMiners.deployed();
+    const gemsInstance = await Gems.deployed();
     const mintMiner = await instance.mintMiner(0, {value: web3.utils.toWei('1', 'ether')});
     const warp = await instance.warp(0);
     const activeMiners = await instance.getActiveMiners(0);
     
     assert.equal(activeMiners, 1, "activeMiners count still 0");
+  });
+  it("should mint GEM for player if sender is MINTER role", async () => {
+    const instance = await SpaceMiners.deployed();
+    const gemsInstance = await Gems.deployed();
+    const mintGems = await instance.callMintGems(accounts[1], 100, gemsInstance.address);
+    const gemsBalance = await gemsInstance.balanceOf(accounts[1]);
+    
+    assert.equal(gemsBalance, 100, "Didn't mint GEMs")
   });
 });

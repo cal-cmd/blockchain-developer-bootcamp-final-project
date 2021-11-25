@@ -43,6 +43,12 @@ interface Portal {
     function ownerOf(uint256 tokenId) external view returns (address);
 }
 
+/// @title ERC20 (Gems.sol) minting function for player's rewards
+interface Gem {
+    function mintGems(address _player, uint amount) external;
+    function balanceOf(address account) external view returns (uint256);
+}
+
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
 /// @title SpaceMiners contract for miners
@@ -86,10 +92,19 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
 
     /// @notice Checks owner of portal
     /// @param _id Portal id
-    /// @param _contractAddress Portal contract address
-    function checkPortalOwner(uint _id, address _contractAddress) internal view returns(address) {
-        Portal portalsContract = Portal(_contractAddress);
+    /// @param _portalContractAddress Portal contract address
+    function checkPortalOwner(uint _id, address _portalContractAddress) internal view returns(address) {
+        Portal portalsContract = Portal(_portalContractAddress);
         return portalsContract.ownerOf(_id);
+    }
+
+    /// @notice Mints GEMs to players account (can only be called by MINTER roles, check Gems.sol)
+    /// @param _player Player's address for GEMs to be minted to
+    /// @param _amount Amount of GEMs
+    /// @param _gemContractAddress Address of ERC20 contract for GEMs
+    function callMintGems(address _player, uint _amount, address _gemContractAddress) public {
+        Gem gemsContract = Gem(_gemContractAddress);
+        gemsContract.mintGems(_player, _amount);
     }
 
     /// @notice Returns amount of active miner(s) for specified id
