@@ -119,6 +119,7 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
     function warp(uint _minerId) public {
         require(balanceOf(msg.sender, _minerId) - activeMiners[msg.sender][_minerId] >= 1, "You don't own any inactive miners");
         require(activeMiners[msg.sender][_minerId] <= 10, "Maximum of 10 miners warped per id");
+        require(departedCount[msg.sender][_minerId] - payoutCount[msg.sender][_minerId] < 10, "Maximum of 10 miners warped per id, please payout");
         minersDepartedTime[msg.sender][_minerId][departedCount[msg.sender][_minerId]] = block.timestamp;
         activeMiners[msg.sender][_minerId]++;
         departedCount[msg.sender][_minerId]++;
@@ -137,8 +138,11 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
                 counter++;
             }
         }
-        callMintGems(msg.sender, amount, _gemContractAddress);
-        activeMiners[msg.sender][_minerId] -= counter;
+
+        if(activeMiners[msg.sender][_minerId] >= 1) {
+            callMintGems(msg.sender, amount, _gemContractAddress);
+            activeMiners[msg.sender][_minerId] -= counter;
+        }
     }
 
     function _beforeTokenTransfer(address operator, address from, address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data) internal virtual override {
