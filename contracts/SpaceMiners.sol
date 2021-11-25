@@ -80,6 +80,7 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
         miners.push(Miner({bagSize: 16, warpFee: 5, returnTime: 48, fee: 1 ether}));
         miners.push(Miner({bagSize: 24, warpFee: 4, returnTime: 39, fee: 1 ether}));
         miners.push(Miner({bagSize: 32, warpFee: 4, returnTime: 31, fee: 1 ether}));
+        // returnTime set to 0 for testing payout() function only
         miners.push(Miner({bagSize: 48, warpFee: 3, returnTime: 0, fee: 1 ether}));
     }
 

@@ -28,7 +28,7 @@ contract("SpaceMiners", async accounts => {
     const warp = await instance.warp(3);
     const mintGems = await instance.payout(3, gemsInstance.address);
     const gemsBalance = await gemsInstance.balanceOf(accounts[0]);
-    
+    // 100000000*10**18 accounts for initial GEMs minted to sender
     assert.equal(gemsBalance, (100000000*10**18) + 48, "Didn't mint GEMs")
   });
 });
