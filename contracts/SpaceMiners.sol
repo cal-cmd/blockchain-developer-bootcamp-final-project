@@ -2,14 +2,14 @@
 pragma solidity ^0.8.0;
 
 import "@chainlink/contracts/src/v0.8/VRFConsumerBase.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
  
-contract RandomNumberConsumer is VRFConsumerBase {
+contract RandomNumberConsumer is VRFConsumerBase, Ownable {
     
     bytes32 internal keyHash;
     uint256 internal fee;
-    
-    uint256 public randomResult;
-    uint256 private randomNumberCounter;
+
+    uint256 internal randomNumber;
     
     constructor() 
         VRFConsumerBase(
@@ -24,7 +24,7 @@ contract RandomNumberConsumer is VRFConsumerBase {
     /** 
      * Requests randomness 
      */
-    function getRandomNumber() public returns (bytes32 requestId) {
+    function getRandomNumber() internal returns (bytes32 requestId) {
         require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
         return requestRandomness(keyHash, fee);
     }
@@ -33,8 +33,7 @@ contract RandomNumberConsumer is VRFConsumerBase {
      * Callback function used by VRF Coordinator
      */
     function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
-        randomResult = randomness;
-        randomNumberCounter++;
+        randomNumber = randomness;
     }
 
     // function withdrawLink() external {} - Implement a withdraw function to avoid locking your LINK in the contract
@@ -53,9 +52,11 @@ interface Gem {
 }
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/ownership/Ownable.sol";
+
 
 /// @title SpaceMiners contract for miners
-contract SpaceMiners is ERC1155, RandomNumberConsumer {
+contract SpaceMiners is ERC1155, RandomNumberConsumer, Ownable {
 
     event Warp(address indexed _owner, uint _minerId, uint _activeMinerCount);
     event FeePayout(address indexed _minerOwner, address indexed _portalOwner, uint amount);
@@ -72,7 +73,6 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
     mapping(address => mapping(uint => mapping(uint => uint))) private minersDepartedTime;
     mapping(address => mapping(uint => uint)) private departedCount;
     mapping(address => mapping(uint => uint)) private payoutCount;
-    mapping(uint => uint) private randomNumbers;
 
     uint256 public constant MINER_1 = 0;
     uint256 public constant MINER_2 = 1;
@@ -123,8 +123,6 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
     function getActiveMiners(uint _minerId) public view returns(uint) {
         return activeMiners[msg.sender][_minerId];
     }
-    
-    /// @notice Generates first randomNumber, can only called by owner
 
     /// @notice Send a miner through a random portal for GEMs
     /// @param _minerId id of the miner (0-3)
@@ -138,9 +136,14 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
         //getRandomNumber(); // Disabled unless running on Rinkeby and can load RandomNumberConsumer with LINK
     }
 
+    /// @notice Creates random number, can only be called by owner
+    function generateRandomNumber() public onlyOwner {
+        getRandomNumber();
+    }
+
     /// @notice Payout to miner owner and portal owner if miner trip time has passed
     /// @param _minerId id of the miner (0-3)
-    function payout(uint _minerId, address _gemContractAddress) public {
+    function payout(uint _minerId, address _gemContractAddress, address _portalContractAddress) public {
         uint counter;
         uint amount;
         // random account seed
@@ -153,8 +156,9 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
         }
 
         if(counter >= 1) {
-            callMintGems(msg.sender, amount, _gemContractAddress);
-            // callMintGems for portal owner
+            callMintGems(msg.sender, amount - (amount / 20), _gemContractAddress);
+            //address portalOwner = getPortalOwner((randomNumber % getMintedPortalSupply(_portalContractAddress)), _portalContractAddress);
+            callMintGems(msg.sender, amount / 20, _gemContractAddress);
             activeMiners[msg.sender][_minerId] -= counter;
         }
     }
