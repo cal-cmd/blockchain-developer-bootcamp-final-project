@@ -9,6 +9,7 @@ contract RandomNumberConsumer is VRFConsumerBase {
     uint256 internal fee;
     
     uint256 public randomResult;
+    uint256 private randomNumberCounter;
     
     constructor() 
         VRFConsumerBase(
@@ -33,6 +34,7 @@ contract RandomNumberConsumer is VRFConsumerBase {
      */
     function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
         randomResult = randomness;
+        randomNumberCounter++;
     }
 
     // function withdrawLink() external {} - Implement a withdraw function to avoid locking your LINK in the contract
@@ -41,6 +43,7 @@ contract RandomNumberConsumer is VRFConsumerBase {
 /// @title ERC1155 ownerOf() for SpaceMiners portals contract
 interface Portal {
     function ownerOf(uint256 tokenId) external view returns (address);
+    function getPortalSupply() external view returns (uint);
 }
 
 /// @title ERC20 (Gems.sol) minting function for player's rewards
@@ -59,7 +62,6 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
 
     struct Miner {
         uint bagSize;
-        uint warpFee;
         uint returnTime;
         uint fee;
     }
@@ -70,6 +72,7 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
     mapping(address => mapping(uint => mapping(uint => uint))) private minersDepartedTime;
     mapping(address => mapping(uint => uint)) private departedCount;
     mapping(address => mapping(uint => uint)) private payoutCount;
+    mapping(uint => uint) private randomNumbers;
 
     uint256 public constant MINER_1 = 0;
     uint256 public constant MINER_2 = 1;
@@ -77,11 +80,11 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
     uint256 public constant MINER_4 = 3;
 
     constructor() ERC1155("https://game.example/api/item/") {
-        miners.push(Miner({bagSize: 16, warpFee: 5, returnTime: 48, fee: 1 ether}));
-        miners.push(Miner({bagSize: 24, warpFee: 4, returnTime: 39, fee: 1 ether}));
-        miners.push(Miner({bagSize: 32, warpFee: 4, returnTime: 31, fee: 1 ether}));
+        miners.push(Miner({bagSize: 16, returnTime: 48, fee: 1 ether}));
+        miners.push(Miner({bagSize: 24, returnTime: 39, fee: 1 ether}));
+        miners.push(Miner({bagSize: 32, returnTime: 31, fee: 1 ether}));
         // returnTime set to 0 for testing payout() function only
-        miners.push(Miner({bagSize: 48, warpFee: 3, returnTime: 0, fee: 1 ether}));
+        miners.push(Miner({bagSize: 48, returnTime: 0, fee: 1 ether}));
     }
 
     /// @notice Mint miner for fee
@@ -94,9 +97,16 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
     /// @notice Checks owner of portal
     /// @param _id Portal id
     /// @param _portalContractAddress Portal contract address
-    function checkPortalOwner(uint _id, address _portalContractAddress) internal view returns(address) {
+    function getPortalOwner(uint _id, address _portalContractAddress) internal view returns(address) {
         Portal portalsContract = Portal(_portalContractAddress);
         return portalsContract.ownerOf(_id);
+    }
+
+    /// @notice Returns minted portal supply
+    /// @param _portalContractAddress portal contract address
+    function getMintedPortalSupply(address _portalContractAddress) public view returns(uint) {
+        Portal portalsContract = Portal(_portalContractAddress);
+        return portalsContract.getPortalSupply();
     }
 
     /// @notice Mints GEMs to players account (can only be called by MINTER roles, check Gems.sol)
@@ -113,13 +123,15 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
     function getActiveMiners(uint _minerId) public view returns(uint) {
         return activeMiners[msg.sender][_minerId];
     }
+    
+    /// @notice Generates first randomNumber, can only called by owner
 
     /// @notice Send a miner through a random portal for GEMs
     /// @param _minerId id of the miner (0-3)
     function warp(uint _minerId) public {
         require(balanceOf(msg.sender, _minerId) - activeMiners[msg.sender][_minerId] >= 1, "You don't own any inactive miners");
-        require(activeMiners[msg.sender][_minerId] <= 10, "Maximum of 10 miners warped per id");
-        require(departedCount[msg.sender][_minerId] - payoutCount[msg.sender][_minerId] < 10, "Maximum of 10 miners warped per id, please payout");
+        require(activeMiners[msg.sender][_minerId] <= 10, "Maximum of 10 active miners warped per id");
+        require(departedCount[msg.sender][_minerId] - payoutCount[msg.sender][_minerId] < 10, "Maximum of 10 payouts per miner id, please payout");
         minersDepartedTime[msg.sender][_minerId][departedCount[msg.sender][_minerId]] = block.timestamp;
         activeMiners[msg.sender][_minerId]++;
         departedCount[msg.sender][_minerId]++;
@@ -131,6 +143,7 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
     function payout(uint _minerId, address _gemContractAddress) public {
         uint counter;
         uint amount;
+        // random account seed
         for(uint i=0; i < activeMiners[msg.sender][_minerId]; i++) {
             if(minersDepartedTime[msg.sender][_minerId][payoutCount[msg.sender][_minerId]] - block.timestamp >= miners[_minerId].returnTime * 60) {
                 amount += miners[_minerId].bagSize;
@@ -139,8 +152,9 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
             }
         }
 
-        if(activeMiners[msg.sender][_minerId] >= 1) {
+        if(counter >= 1) {
             callMintGems(msg.sender, amount, _gemContractAddress);
+            // callMintGems for portal owner
             activeMiners[msg.sender][_minerId] -= counter;
         }
     }

@@ -37,4 +37,9 @@ contract Portals is ERC721URIStorage, Ownable {
     function changePortalMintingFee(uint _fee) public onlyOwner {
         portalMintingFee = _fee;
     }
+
+    /// @notice Returns minted portal supply
+    function getPortalSupply() public view returns (uint) {
+        return _tokenIds.current();
+    }
 }
