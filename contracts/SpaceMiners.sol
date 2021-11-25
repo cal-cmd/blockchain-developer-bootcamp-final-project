@@ -80,7 +80,7 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
         miners.push(Miner({bagSize: 16, warpFee: 5, returnTime: 48, fee: 1 ether}));
         miners.push(Miner({bagSize: 24, warpFee: 4, returnTime: 39, fee: 1 ether}));
         miners.push(Miner({bagSize: 32, warpFee: 4, returnTime: 31, fee: 1 ether}));
-        miners.push(Miner({bagSize: 48, warpFee: 3, returnTime: 24, fee: 1 ether}));
+        miners.push(Miner({bagSize: 48, warpFee: 3, returnTime: 0, fee: 1 ether}));
     }
 
     /// @notice Mint miner for fee
@@ -102,7 +102,7 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
     /// @param _player Player's address for GEMs to be minted to
     /// @param _amount Amount of GEMs
     /// @param _gemContractAddress Address of ERC20 contract for GEMs
-    function callMintGems(address _player, uint _amount, address _gemContractAddress) public {
+    function callMintGems(address _player, uint _amount, address _gemContractAddress) internal {
         Gem gemsContract = Gem(_gemContractAddress);
         gemsContract.mintGems(_player, _amount);
     }
@@ -126,14 +126,17 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer {
 
     /// @notice Payout to miner owner and portal owner if miner trip time has passed
     /// @param _minerId id of the miner (0-3)
-    function payout(uint _minerId) public {
+    function payout(uint _minerId, address _gemContractAddress) public {
         uint counter;
+        uint amount;
         for(uint i=0; i < activeMiners[msg.sender][_minerId]; i++) {
             if(minersDepartedTime[msg.sender][_minerId][payoutCount[msg.sender][_minerId]] - block.timestamp >= miners[_minerId].returnTime * 60) {
+                amount += miners[_minerId].bagSize;
                 payoutCount[msg.sender][_minerId]++;
                 counter++;
             }
         }
+        callMintGems(msg.sender, amount, _gemContractAddress);
         activeMiners[msg.sender][_minerId] -= counter;
     }
 

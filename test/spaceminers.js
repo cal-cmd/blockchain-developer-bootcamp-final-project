@@ -21,12 +21,14 @@ contract("SpaceMiners", async accounts => {
     
     assert.equal(activeMiners, 1, "activeMiners count still 0");
   });
-  it("should mint GEM for player if sender is MINTER role", async () => {
+  it("should mint GEM for player upon miner return", async () => {
     const instance = await SpaceMiners.deployed();
     const gemsInstance = await Gems.deployed();
-    const mintGems = await instance.callMintGems(accounts[1], 100, gemsInstance.address);
-    const gemsBalance = await gemsInstance.balanceOf(accounts[1]);
+    const mintMiner = await instance.mintMiner(3, {value: web3.utils.toWei('1', 'ether')});
+    const warp = await instance.warp(3);
+    const mintGems = await instance.payout(3, gemsInstance.address);
+    const gemsBalance = await gemsInstance.balanceOf(accounts[0]);
     
-    assert.equal(gemsBalance, 100, "Didn't mint GEMs")
+    assert.equal(gemsBalance, (100000000*10**18) + 48, "Didn't mint GEMs")
   });
 });
