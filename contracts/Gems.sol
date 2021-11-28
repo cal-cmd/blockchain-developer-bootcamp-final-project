@@ -9,7 +9,6 @@ import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol"
 contract Gems is ERC20PresetMinterPauser {
     bytes32 public constant MINTER = keccak256("MINTER");
 
-    // for the sake of keeping testing easy for everyone will make minter role msg.sender (it will typically be the SpaceMiners.sol contract address)
     constructor(address _gameContractAddress) ERC20PresetMinterPauser('GEMS', 'GEM') {
         _mint(msg.sender, 100000000*10**18);
         grantRole(MINTER, _gameContractAddress);

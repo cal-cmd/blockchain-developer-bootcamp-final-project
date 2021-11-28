@@ -5,7 +5,7 @@ contract("Portals", async accounts => {
     const instance = await Portals.deployed();
     try {
       for(let i=0; i < 11; i++) {
-        const mintPortal = await instance.mintPortal(accounts[0], "", {value: web3.utils.toWei('1', 'ether')});
+        const mintPortal = await instance.mintPortal(accounts[0], "", {value: web3.utils.toWei('1', 'wei')});
       }
     } catch(error) {}
 
