@@ -4,9 +4,9 @@ A play-to-earn game where miners travel to the far ends of the galaxy through po
 
 # Frontend
 
-Live website: `https://spaceminers.surge.sh/debug`
+Live website: https://spaceminers.surge.sh/debug
 
-Github link: `https://github.com/caleb-berry/final-project-frontend`
+Github link: https://github.com/caleb-berry/final-project-frontend
 
 # Directory Structure
 
