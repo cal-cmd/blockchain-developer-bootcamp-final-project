@@ -1,0 +1,5 @@
+0x5fd51C7c172C36D541F0d0ec172989FC5ddcae1B - SpaceMiners.sol
+0xBd5f42BDF47B6a2171b1BED422a9e1EBb34DBaA1 - Portals.sol
+0x78a72F5D7D1ADdD40358EbE6895a9C3BB6210722 - Gems.sol
+
+All contracts are on Rinkeby Testnet
