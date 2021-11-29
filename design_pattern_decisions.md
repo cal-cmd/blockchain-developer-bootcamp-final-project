@@ -9,7 +9,7 @@
 
 ## Inheritance and Interfaces
 
-`Portal` interface was used to call `ownerOf()` and `getPortalSupply()` in `Portals.sol` for random number generation.
+`Portal` interface was used to call `ownerOf()` and `getPortalSupply()` in `Portals.sol` for helping with random number generation.
 `Gem` interface was used to call `mintGems()` and `balanceOf()` in `Gems.sol` for player rewards in GEM.
 `SpaceMiners.sol` inherits `ERC1155.sol` from OpenZeppelin for miner NFTs.
 `SpaceMiners.sol` inherits `RandomNumberConsumer.sol` from Chainlink for random numbers.

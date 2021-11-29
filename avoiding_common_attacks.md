@@ -11,3 +11,8 @@ All contracts are compiled using `v0.8.0`
 ## Checks-Effects-Interactions (SWC-107)
 
 `payout()` in `SpaceMiners.sol` subtracts the activeMiner counter before transferring GEMs to miner and portal owners to protect against `Re-entrancy`.
+
+## Weak Sources of Randomness from Chain (SW-120)
+
+Using Chainlink's VRF contracts we can randomly pick a portal to be rewarded the fee without the user being able to predict who would get the reward.
+
