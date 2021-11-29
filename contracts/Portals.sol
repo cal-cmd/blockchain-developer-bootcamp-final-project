@@ -21,6 +21,7 @@ contract Portals is ERC721URIStorage, Ownable {
     /// @param tokenURI token URI
     function mintPortal(address player, string memory tokenURI) public payable returns (uint256) {
         require(msg.value == portalMintingFee, "");
+        
         _tokenIds.increment();
         require(_tokenIds.current() <= 10, "only up to 10 portals can be minted");
 

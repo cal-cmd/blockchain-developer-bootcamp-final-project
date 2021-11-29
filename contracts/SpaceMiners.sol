@@ -57,8 +57,18 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 /// @title ERC1155 SpaceMiners main game contract
 contract SpaceMiners is ERC1155, RandomNumberConsumer, Ownable {
 
-    event Warp(address indexed _owner, uint _minerId, uint _activeMinerCount);
-    event FeePayout(address indexed _minerOwner, address indexed _portalOwner, uint amount);
+    /// @notice Emitted after a miner is warped
+    /// @param _minerOwner Owner of miners address
+    /// @param _minerId id of the miner (0-3)
+    /// @param _activeMinerCount number of active miners deployed for that id
+    event Warp(address indexed _minerOwner, uint _minerId, uint _activeMinerCount);
+
+    /// @notice Emitted after payout
+    /// @param _minerOwner Owner of the miners address
+    /// @param _reward GEMs reward for miner owner
+    /// @param _portalOwner Owner of the portals address
+    /// @param _fee GEMs fee reward for portal owner
+    event FeePayout(address indexed _minerOwner, uint _reward, address indexed _portalOwner, uint _fee);
 
     struct Miner {
         uint bagSize;
@@ -79,11 +89,11 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer, Ownable {
     uint256 public constant MINER_4 = 3;
 
     constructor() ERC1155("https://game.example/api/item/") {
-        miners.push(Miner({bagSize: 16, returnTime: 48, fee: 1 ether}));
-        miners.push(Miner({bagSize: 24, returnTime: 39, fee: 1 ether}));
-        miners.push(Miner({bagSize: 32, returnTime: 31, fee: 1 ether}));
+        miners.push(Miner({bagSize: 16, returnTime: 48, fee: 1 wei}));
+        miners.push(Miner({bagSize: 24, returnTime: 39, fee: 1 wei}));
+        miners.push(Miner({bagSize: 32, returnTime: 31, fee: 1 wei}));
         // returnTime set to 0 for testing payout() function only
-        miners.push(Miner({bagSize: 48, returnTime: 0, fee: 1 ether}));
+        miners.push(Miner({bagSize: 48, returnTime: 0, fee: 1 wei}));
     }
 
     /// @notice Mint miner for fee
@@ -162,6 +172,7 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer, Ownable {
             portalOwner = getPortalOwner((randomNumber % getMintedPortalSupply(_portalContractAddress) + 1), _portalContractAddress);
             callMintGems(portalOwner, amount / 20, _gemContractAddress);
             activeMiners[msg.sender][_minerId] -= counter;
+            emit FeePayout(msg.sender, amount - (amount / 20), portalOwner, amount / 20);
         }
     }
 
