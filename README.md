@@ -8,10 +8,15 @@ A play-to-earn game where miners travel to the far ends of the galaxy through po
 - Truffle
 
 1 - `git clone https://github.com/caleb-berry/blockchain-developer-bootcamp-final-project.git`
-2 - `cd blockchain-developer-bootcamp-final-project'
+
+2 - `cd blockchain-developer-bootcamp-final-project`
+
 3 - `npm install`
+
 4 - `truffle test` - Will execute six tests for the three contracts
+
 5 - Check "Environment Variables" below and make sure file is populated to deploy to testnet.
+
 6 - `truffle migrate --network rinkeby` 
 
 # Environment Variables
