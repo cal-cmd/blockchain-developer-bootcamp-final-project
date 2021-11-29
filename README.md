@@ -21,21 +21,24 @@ A play-to-earn game where miners travel to the far ends of the galaxy through po
 
 # Environment Variables
 
-Create a `.env` file in the main directory and populate with the following:
+Create a `.env` file in the main directory and populate the following with your own information:
 
 `MNEMONIC=test test test test test test test test test test test test` please fill out with your wallet's mnemonic.
+
 `INFURA_KEY=xxxxxxxxxxxxxxxxxxxxxxxxx` project id key from Infura.io
 
 # Frontend
 
 Live website: https://spaceminers.surge.sh/debug
 
-Front github link: https://github.com/caleb-berry/final-project-frontend (Used a different repo since scaffold-eth uses Hardhat instead of Truffle)
+Frontend github link: https://github.com/caleb-berry/final-project-frontend (Used a different repo since scaffold-eth uses Hardhat instead of Truffle)
 
 # Directory Structure
 
 Contracts are located in `/contracts`
+
 Migration files are located in `/migrations`
+
 Tests are located in `/test`
 
 # ETH Address for NFT
