@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.0;
 
 import "@chainlink/contracts/src/v0.8/VRFConsumerBase.sol";
  
@@ -161,17 +161,17 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer, Ownable {
         address portalOwner;
         for(uint i=0; i < activeMiners[msg.sender][_minerId]; i++) {
             if(minersDepartedTime[msg.sender][_minerId][payoutCount[msg.sender][_minerId]] - block.timestamp >= miners[_minerId].returnTime * 60) {
-                amount += miners[_minerId].bagSize;
                 payoutCount[msg.sender][_minerId]++;
                 counter++;
+                amount += miners[_minerId].bagSize;
             }
         }
 
         if(counter >= 1) {
+            activeMiners[msg.sender][_minerId] -= counter;
             callMintGems(msg.sender, amount - (amount / 20), _gemContractAddress);
             portalOwner = getPortalOwner((randomNumber % getMintedPortalSupply(_portalContractAddress) + 1), _portalContractAddress);
             callMintGems(portalOwner, amount / 20, _gemContractAddress);
-            activeMiners[msg.sender][_minerId] -= counter;
             emit FeePayout(msg.sender, amount - (amount / 20), portalOwner, amount / 20);
         }
     }
