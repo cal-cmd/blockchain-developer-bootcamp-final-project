@@ -22,4 +22,5 @@
 
 ## Access Control Design Patterns
 
-- `Ownable.sol` was used in two functions: `changePortalMintingFee()` and `generateRandomNumber()` to protect functions that should only be called by the contract owner. - `changePortalMintingFee()` can be found in `Portals.sol`, and `generateRandomNumber()` can be found in `SpaceMiners.sol`.
+- `Ownable.sol` was used in two functions: `changePortalMintingFee()` and `generateRandomNumber()` to protect functions that should only be called by the contract owner. 
+- `changePortalMintingFee()` can be found in `Portals.sol`, and `generateRandomNumber()` can be found in `SpaceMiners.sol`.
