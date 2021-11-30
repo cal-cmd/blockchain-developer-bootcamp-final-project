@@ -6,6 +6,7 @@ A play-to-earn game where miners travel to the far ends of the galaxy through po
 
 - Node >=12.22.7
 - Truffle
+- Localhost port is `9545`
 
 1 - `git clone https://github.com/caleb-berry/blockchain-developer-bootcamp-final-project.git`
 

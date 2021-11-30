@@ -163,15 +163,18 @@ contract SpaceMiners is ERC1155, RandomNumberConsumer, Ownable {
             if(minersDepartedTime[msg.sender][_minerId][payoutCount[msg.sender][_minerId]] - block.timestamp >= miners[_minerId].returnTime * 60) {
                 payoutCount[msg.sender][_minerId]++;
                 counter++;
+                
                 amount += miners[_minerId].bagSize;
             }
         }
 
         if(counter >= 1) {
             activeMiners[msg.sender][_minerId] -= counter;
-            callMintGems(msg.sender, amount - (amount / 20), _gemContractAddress);
             portalOwner = getPortalOwner((randomNumber % getMintedPortalSupply(_portalContractAddress) + 1), _portalContractAddress);
+
+            callMintGems(msg.sender, amount - (amount / 20), _gemContractAddress);
             callMintGems(portalOwner, amount / 20, _gemContractAddress);
+
             emit FeePayout(msg.sender, amount - (amount / 20), portalOwner, amount / 20);
         }
     }
